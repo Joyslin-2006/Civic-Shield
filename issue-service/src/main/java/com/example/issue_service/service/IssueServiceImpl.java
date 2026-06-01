@@ -2,6 +2,8 @@ package com.example.issue_service.service;
 
 import com.example.issue_service.dto.IssueRequest;
 import com.example.issue_service.entity.Issue;
+import com.example.issue_service.kafka.IssueCreatedEvent;
+import com.example.issue_service.kafka.KafkaProducerService;
 import com.example.issue_service.repository.IssueRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,8 +14,10 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+
 public class IssueServiceImpl implements IssueService {
     private final IssueRepository issueRepository;
+    private final KafkaProducerService kafkaProducerService;
 
 
     @Override
@@ -57,7 +61,18 @@ public class IssueServiceImpl implements IssueService {
                 .assignedDepartment(department)
                 .build();
 
-        return issueRepository.save(issue);
+        Issue savedIssue = issueRepository.save(issue);
+
+// Publish Kafka event
+        kafkaProducerService.publishIssueCreated(
+                new IssueCreatedEvent(
+                        savedIssue.getId(),
+                        savedIssue.getIssueType(),
+                        savedIssue.getPincode()
+                )
+        );
+
+        return savedIssue;
     }
 
     @Override
