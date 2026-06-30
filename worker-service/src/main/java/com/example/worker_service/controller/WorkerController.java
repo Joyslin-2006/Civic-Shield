@@ -10,7 +10,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/workers")
 @RequiredArgsConstructor
-
+@CrossOrigin(origins = "http://localhost:5174")
 public class WorkerController {
     private final WorkerRepository workerRepository;
 

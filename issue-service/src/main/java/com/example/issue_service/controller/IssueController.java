@@ -11,7 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/issues")
 @RequiredArgsConstructor
-
+@CrossOrigin(origins = "http://localhost:5174")
 public class IssueController {
     private final IssueService issueService;
 
